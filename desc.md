@@ -1,1 +1,0 @@
-- [coverage](./cover/)
