@@ -2,7 +2,7 @@ name: main
 
 on:
   push:
-    branches: [main, update20210828]
+    branches: [main]
   workflow_dispatch: {}
 
 jobs:

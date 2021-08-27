@@ -2,7 +2,7 @@ name: branch test
 
 on:
   push:
-    branches-ignore: [gh-pages, main, update20210828]
+    branches-ignore: [gh-pages, main]
   workflow_dispatch: {}
 
 jobs:
