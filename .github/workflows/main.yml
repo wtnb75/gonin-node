@@ -49,7 +49,7 @@ jobs:
       run: mkdir -p output
     - name: generate doc
       run: |
-        $GOPATH/bin/godoc-static -zip '' -destination=output -site-description-file=desc.md -site-name=gonin-node github.com/wtnb75/gonin-node
+        $(go env GOPATH)/bin/godoc-static -zip '' -destination=output -site-description-file=desc.md -site-name=gonin-node github.com/wtnb75/gonin-node
 
   test:
     needs: setup
