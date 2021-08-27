@@ -36,7 +36,9 @@ func main() {
 		log.Fatalln("read config", err)
 	}
 	cfp.Close()
-	conf.ReadPlugins(opts.Dir)
+	if err := conf.ReadPlugins(opts.Dir); err != nil {
+		log.Fatalln("cannot read plugin", err)
+	}
 	if opts.Repl {
 		srv := protocol.Server{Name: "local-repl", Config: conf}
 		conn := protocol.Conn{Srv: &srv}

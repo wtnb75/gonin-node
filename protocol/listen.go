@@ -49,10 +49,14 @@ func (srv *Server) ListenAndServe() error {
 	}
 }
 
-func (conn *Conn) Handle(inp io.Reader, outp io.Writer) error {
+func (conn *Conn) Handle(inp io.Reader, outp io.Writer) {
 	defer conn.Close()
 	fmt.Fprintln(conn.Conn, "# munin node at", conn.Srv.Name)
-	return conn.Repl(conn.Conn, conn.Conn)
+	if err := conn.Repl(conn.Conn, conn.Conn); err != nil {
+		if err != io.EOF {
+			log.Fatalln("repl error", err)
+		}
+	}
 }
 
 func (conn *Conn) Close() {
