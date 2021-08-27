@@ -48,7 +48,7 @@ jobs:
         go get golang.org/x/tools/cmd/godoc@latest
         go get gitlab.com/tslocum/godoc-static@latest
     - name: mkdir
-      run: mkdir -p output
+      run: mkdir -p output/cover
     - name: generate doc
       run: |
         export PATH="${PATH}:$(go env GOPATH)/bin"
