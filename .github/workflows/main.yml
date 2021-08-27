@@ -12,7 +12,7 @@ jobs:
     - name: set up
       uses: actions/setup-go@v2
       with:
-        go-version: ^1.13
+        go-version: ^1.16
       id: go
     - name: check out
       uses: actions/checkout@v2
@@ -44,14 +44,11 @@ jobs:
     - name: test
       run: go test -v -cover -coverprofile=cover.out ./...
     - name: mkdir
-      run: |
-        mkdir output
-        touch output/.nojekyll
+      run: mkdir -p output
     - name: coverage
       run: go tool cover -html cover.out -o output/index.html
     - name: deploy
       uses: peaceiris/actions-gh-pages@v3
-      if: ${{ github.ref == 'refs/heads/main' }}
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./output

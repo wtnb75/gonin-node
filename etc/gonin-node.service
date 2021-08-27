@@ -1,0 +1,12 @@
+[Unit]
+Description=munin-node compatible server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/gonin-node --config /usr/local/etc/gonin-node/munin-node.conf --plugin-dir /usr/local/etc/gonin-node/plugins
+Restart=on-failure
+RestartSec=60s
+
+[Install]
+WantedBy=multi-user.target
