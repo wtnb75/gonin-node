@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.github.wtnb75.gonin-node</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/usr/local/sbin/gonin-node</string>
+      <string>--config</string>
+      <string>/usr/local/etc/gonin-node/munin-node.conf</string>
+      <string>--plugin-dir</string>
+      <string>/usr/local/etc/gonin-node/plugins</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>Sockets</key>
+    <dict>
+      <key>SockServiceName</key>
+      <string>munin</string>
+      <key>SockType</key>
+      <string>stream</string>
+      <key>SockFamily</key>
+      <string>IPv4</string>
+    </dict>
+  </dict>
+</plist>
