@@ -1,0 +1,61 @@
+package protocol
+
+import (
+	"fmt"
+	"io"
+	"log"
+	"net"
+	"os"
+
+	"github.com/wtnb75/wunin/config"
+)
+
+func ListenAndServe(addr string, conf config.Config) error {
+	name, err := os.Hostname()
+	if err != nil {
+		name = "wunin-node"
+	}
+	srv := Server{Addr: addr, Config: conf, Name: name}
+	return srv.ListenAndServe()
+}
+
+type Server struct {
+	Addr   string
+	Name   string
+	Config config.Config
+}
+
+type Conn struct {
+	RemoteAddr  net.Addr
+	Srv         *Server
+	Conn        net.Conn
+	Multigraph  bool
+	DirtyConfig bool
+}
+
+func (srv *Server) ListenAndServe() error {
+	ln, err := net.Listen("tcp", srv.Addr)
+	if err != nil {
+		return err
+	}
+	for {
+		conn, err := ln.Accept()
+		if err != nil {
+			return err
+		}
+		log.Printf("connect from %s -> %s", conn.RemoteAddr(), conn.LocalAddr())
+		connstruct := Conn{Conn: conn, RemoteAddr: conn.RemoteAddr(), Multigraph: false, DirtyConfig: false, Srv: srv}
+		go connstruct.Handle(conn, conn)
+	}
+}
+
+func (conn *Conn) Handle(inp io.Reader, outp io.Writer) error {
+	defer conn.Close()
+	fmt.Fprintln(conn.Conn, "# munin node at", conn.Srv.Name)
+	return conn.Repl(conn.Conn, conn.Conn)
+}
+
+func (conn *Conn) Close() {
+	log.Println("close connection", conn.RemoteAddr)
+	conn.Conn.Close()
+}
