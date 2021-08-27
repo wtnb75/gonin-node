@@ -36,6 +36,21 @@ jobs:
         cd cmd/gonin-node
         go build
 
+  doc:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install godoc-static
+      run: |
+        go get gitlab.com/tslocum/godoc-static
+        go get golang.org/x/tools/cmd/godoc
+    - name: mkdir
+      run: mkdir -p output
+    - name: generate doc
+      run: |
+        godoc-static -zip '' -destination=output -site-description-file=desc.md -site-name=gonin-node github.com/wtnb75/gonin-node
+
   test:
     needs: setup
     runs-on: ubuntu-latest
@@ -45,10 +60,15 @@ jobs:
       run: go test -v -cover -coverprofile=cover.out ./...
     - name: mkdir
       run: |
-        mkdir output
-        touch output/.nojekyll
+        mkdir -p output/cover
     - name: coverage
-      run: go tool cover -html cover.out -o output/index.html
+      run: go tool cover -html cover.out -o output/cover/index.html
+
+  deploy:
+    needs: [test, doc]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
     - name: deploy
       uses: peaceiris/actions-gh-pages@v3
       if: ${{ github.ref == 'refs/heads/main' }}
