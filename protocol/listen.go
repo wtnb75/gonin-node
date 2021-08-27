@@ -7,13 +7,13 @@ import (
 	"net"
 	"os"
 
-	"github.com/wtnb75/wunin/config"
+	"github.com/wtnb75/gonin-node/config"
 )
 
 func ListenAndServe(addr string, conf config.Config) error {
 	name, err := os.Hostname()
 	if err != nil {
-		name = "wunin-node"
+		name = "gonin-node"
 	}
 	srv := Server{Addr: addr, Config: conf, Name: name}
 	return srv.ListenAndServe()

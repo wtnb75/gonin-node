@@ -6,8 +6,8 @@ import (
 	"os"
 
 	flags "github.com/jessevdk/go-flags"
-	"github.com/wtnb75/wunin/config"
-	"github.com/wtnb75/wunin/protocol"
+	"github.com/wtnb75/gonin-node/config"
+	"github.com/wtnb75/gonin-node/protocol"
 )
 
 type Option struct {
