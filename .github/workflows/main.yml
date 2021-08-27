@@ -1,8 +1,8 @@
-name: branch test
+name: main
 
 on:
   push:
-    branches-ignore: [gh-pages, main]
+    branches: [main]
   workflow_dispatch: {}
 
 jobs:
@@ -43,8 +43,19 @@ jobs:
     - uses: actions/checkout@v2
     - name: test
       run: go test -v -cover -coverprofile=cover.out ./...
+    - name: mkdir
+      run: |
+        mkdir output
+        touch output/.nojekyll
     - name: coverage
-      run: go tool cover -func cover.out
+      run: go tool cover -html cover.out -o output/index.html
+    - name: deploy
+      uses: peaceiris/actions-gh-pages@v3
+      if: ${{ github.ref == 'refs/heads/main' }}
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./output
+        force_orphan: true
 
   lint:
     needs: setup
