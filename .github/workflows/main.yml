@@ -52,6 +52,7 @@ jobs:
     - name: generate doc
       run: |
         export PATH="${PATH}:$(go env GOPATH)/bin"
+        export GOPATH=/
         godoc-static -zip '' -destination=output -site-description-file=desc.md -site-name=gonin-node github.com/wtnb75/gonin-node
     - name: coverage
       run: go tool cover -html cover.out -o output/cover/index.html
