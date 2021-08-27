@@ -12,7 +12,7 @@ jobs:
     - name: set up
       uses: actions/setup-go@v2
       with:
-        go-version: ^1.13
+        go-version: ^1.16
       id: go
     - name: check out
       uses: actions/checkout@v2
@@ -43,8 +43,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: install godoc-static
       run: |
-        go install golang.org/x/tools/cmd/godoc@v0.1.5
-        go install gitlab.com/tslocum/godoc-static@v0.1.8
+        go get golang.org/x/tools/cmd/godoc@latest
+        go get gitlab.com/tslocum/godoc-static@latest
     - name: mkdir
       run: mkdir -p output
     - name: generate doc
