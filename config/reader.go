@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"path/filepath"
+	"strings"
 
 	"github.com/google/shlex"
 )
@@ -56,12 +57,43 @@ func (cfg *Config) GetWithPart(part, key, def string) string {
 		if ok, err := filepath.Match(m, part); ok {
 			if v, ok := cfg.parts[m][key]; ok {
 				return v
-			} else {
-				return def
 			}
 		} else {
 			log.Println("error", err)
 		}
 	}
-	return def
+	return cfg.Get(key, def)
+}
+
+func (cfg *Config) List(prefix string) map[string]string {
+	res := map[string]string{}
+	for k, v := range cfg.kv {
+		if strings.HasPrefix(k, prefix) {
+			res[k] = v
+		}
+	}
+	return res
+}
+
+func (cfg *Config) ListWithPart(part, prefix string) map[string]string {
+	res := map[string]string{}
+	for m := range cfg.parts {
+		if ok, err := filepath.Match(m, part); ok {
+			for k, v := range cfg.parts[m] {
+				if strings.HasPrefix(k, prefix) {
+					res[k] = v
+				}
+			}
+		} else {
+			log.Println("error", err)
+		}
+	}
+	for k, v := range cfg.kv {
+		if strings.HasPrefix(k, prefix) {
+			if _, ok := res[k]; !ok {
+				res[k] = v
+			}
+		}
+	}
+	return res
 }

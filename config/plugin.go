@@ -8,15 +8,44 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
 	"sort"
-	"strings"
 	"strconv"
+	"strings"
+	"syscall"
 )
 
 type Plugin struct {
 	CommandPath string
 	MultiGraph  bool
+	Env         map[string]string
+	Uid         uint32
+	Gid         uint32
+}
+
+func username2uid(name string) (uint32, error) {
+	if user, err := user.Lookup(name); err != nil {
+		return 0, err
+	} else {
+		if uid, err := strconv.ParseUint(user.Uid, 8, 32); err != nil {
+			return 0, err
+		} else {
+			return uint32(uid), nil
+		}
+	}
+}
+
+func groupname2gid(name string) (uint32, error) {
+	if grp, err := user.LookupGroup(name); err != nil {
+		return 0, err
+	} else {
+		if uid, err := strconv.ParseUint(grp.Gid, 8, 32); err != nil {
+			return 0, err
+		} else {
+			return uint32(uid), nil
+		}
+	}
 }
 
 func (cfg *Config) ReadPlugins(dirname string) error {
@@ -34,24 +63,32 @@ func (cfg *Config) ReadPlugins(dirname string) error {
 		if (file.Mode() & 0100) != 0 {
 			fn := filepath.Join(dirname, file.Name())
 			log.Println("plugin:", fn)
-			cmd := exec.Command(fn, "config")
-			cmd.Env = baseenv
-			cmd.Stdin = nil
+			plugin := Plugin{CommandPath: fn}
+			username := cfg.GetWithPart(file.Name(), "user", "munin")
+			groupname := cfg.GetWithPart(file.Name(), "group", "munin")
+			if uid, err := username2uid(username); err != nil {
+				log.Println("user name error:", username, err)
+			} else {
+				plugin.Uid = uid
+			}
+			if gid, err := groupname2gid(groupname); err != nil {
+				log.Println("group name error:", groupname, err)
+			} else {
+				plugin.Gid = gid
+			}
+			plugin.Env = map[string]string{}
+			for k, v := range cfg.ListWithPart(file.Name(), "env.") {
+				plugin.Env[k[4:]] = v
+			}
+			log.Printf("plugin: %+v", plugin)
 			var stdout bytes.Buffer
-			var stderr bytes.Buffer
-			cmd.Stdout = &stdout
-			cmd.Stderr = &stderr
-			err := cmd.Run()
-			if err != nil {
+			if err := plugin.ShowConfig(false, &stdout); err != nil {
 				log.Println("cmd error", err)
 				log.Println("output", strconv.Quote(stdout.String()))
-				log.Println("error", strconv.Quote(stderr.String()))
 				continue
 			}
 			confstr := strings.TrimSpace(stdout.String())
-			mgraph := strings.HasPrefix(confstr, "multigraph")
-			plugin := Plugin{CommandPath: fn, MultiGraph: mgraph}
-			log.Printf("plugin: %+v", plugin)
+			plugin.MultiGraph = strings.HasPrefix(confstr, "multigraph")
 			cfg.plugins[file.Name()] = plugin
 		}
 	}
@@ -86,9 +123,15 @@ var baseenv = []string{
 func (p *Plugin) Execute(output io.Writer) error {
 	cmd := exec.Command(p.CommandPath)
 	cmd.Env = baseenv
+	for k, v := range p.Env {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", k, v))
+	}
 	cmd.Stdin = nil
 	cmd.Stdout = output
 	cmd.Stderr = os.Stderr
+	cmd.SysProcAttr = &syscall.SysProcAttr{}
+	cmd.SysProcAttr.Credential = &syscall.Credential{
+		Uid: p.Uid, Gid: p.Gid}
 	return cmd.Run()
 }
 
