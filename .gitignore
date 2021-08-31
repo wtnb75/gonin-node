@@ -1,2 +1,3 @@
 cmd/gonin-node/gonin-node
+cmd/gonin-node/plugins
 cover.*
