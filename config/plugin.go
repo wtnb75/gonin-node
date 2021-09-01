@@ -80,7 +80,6 @@ func (cfg *Config) ReadPlugins(dirname string) error {
 			for k, v := range cfg.ListWithPart(file.Name(), "env.") {
 				plugin.Env[k[4:]] = v
 			}
-			log.Printf("plugin: %+v", plugin)
 			var stdout bytes.Buffer
 			if err := plugin.ShowConfig(false, &stdout); err != nil {
 				log.Println("cmd error", err)
@@ -89,6 +88,7 @@ func (cfg *Config) ReadPlugins(dirname string) error {
 			}
 			confstr := strings.TrimSpace(stdout.String())
 			plugin.MultiGraph = strings.HasPrefix(confstr, "multigraph")
+			log.Printf("plugin: %s %+v", file.Name(), plugin)
 			cfg.plugins[file.Name()] = plugin
 		}
 	}
