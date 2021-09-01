@@ -1,0 +1,385 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>protocol: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/wtnb75/gonin-node/protocol/cap.go (100.0%)</option>
+				
+				<option value="file1">github.com/wtnb75/gonin-node/protocol/config.go (0.0%)</option>
+				
+				<option value="file2">github.com/wtnb75/gonin-node/protocol/fetch.go (0.0%)</option>
+				
+				<option value="file3">github.com/wtnb75/gonin-node/protocol/list.go (100.0%)</option>
+				
+				<option value="file4">github.com/wtnb75/gonin-node/protocol/listen.go (0.0%)</option>
+				
+				<option value="file5">github.com/wtnb75/gonin-node/protocol/nodes.go (100.0%)</option>
+				
+				<option value="file6">github.com/wtnb75/gonin-node/protocol/quit.go (100.0%)</option>
+				
+				<option value="file7">github.com/wtnb75/gonin-node/protocol/repl.go (90.9%)</option>
+				
+				<option value="file8">github.com/wtnb75/gonin-node/protocol/version.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package protocol
+
+import (
+        "fmt"
+        "io"
+        "log"
+)
+
+func Cap(conn *Conn, cmd string, arg []string, ofp io.Writer) error <span class="cov8" title="1">{
+        fmt.Fprintln(ofp, "cap multigraph dirtyconfig")
+        for _, v := range arg </span><span class="cov8" title="1">{
+                if v == "multigraph" </span><span class="cov8" title="1">{
+                        // enable multigraph mode
+                        log.Println("enable multigraph mode")
+                        conn.Multigraph = true
+                }</span> else<span class="cov8" title="1"> if v == "dirtyconfig" </span><span class="cov8" title="1">{
+                        log.Println("enable dirtyconfig mode")
+                        conn.DirtyConfig = true
+                }</span>
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package protocol
+
+import (
+        "fmt"
+        "io"
+        "log"
+)
+
+func Config(conn *Conn, cmd string, arg []string, ofp io.Writer) error <span class="cov0" title="0">{
+        if len(arg) == 0 </span><span class="cov0" title="0">{
+                fmt.Fprintln(ofp, "# Unknown service")
+                fmt.Fprintln(ofp, ".")
+                return nil
+        }</span>
+        <span class="cov0" title="0">for _, v := range arg </span><span class="cov0" title="0">{
+                plugin, err := conn.Srv.Config.GetPlugin(v)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Println("plugin", err)
+                        fmt.Fprintln(ofp, "# Unknown service")
+                        fmt.Fprintln(ofp, ".")
+                }</span> else<span class="cov0" title="0"> {
+                        err := plugin.ShowConfig(conn.DirtyConfig, ofp)
+                        if err != nil </span><span class="cov0" title="0">{
+                                log.Println("error", err)
+                        }</span>
+                        <span class="cov0" title="0">fmt.Fprintln(ofp, ".")</span>
+                }
+        }
+        <span class="cov0" title="0">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package protocol
+
+import (
+        "fmt"
+        "io"
+        "log"
+)
+
+func Fetch(conn *Conn, cmd string, arg []string, ofp io.Writer) error <span class="cov0" title="0">{
+        if len(arg) == 0 </span><span class="cov0" title="0">{
+                fmt.Fprintln(ofp, "# Unknown service")
+                fmt.Fprintln(ofp, ".")
+                return nil
+        }</span>
+        <span class="cov0" title="0">for _, v := range arg </span><span class="cov0" title="0">{
+                plugin, err := conn.Srv.Config.GetPlugin(v)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Println("plugin", err)
+                        fmt.Fprintln(ofp, "# Unknown service")
+                        fmt.Fprintln(ofp, ".")
+                }</span> else<span class="cov0" title="0"> {
+                        err := plugin.Execute(ofp)
+                        if err != nil </span><span class="cov0" title="0">{
+                                log.Println("exec error", err)
+                        }</span>
+                        <span class="cov0" title="0">fmt.Fprintln(ofp, ".")</span>
+                }
+        }
+        <span class="cov0" title="0">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package protocol
+
+import (
+        "fmt"
+        "io"
+        "strings"
+)
+
+func List(conn *Conn, cmd string, arg []string, ofp io.Writer) error <span class="cov8" title="1">{
+        fmt.Fprintln(ofp, strings.Join(conn.Srv.Config.ListPlugin(conn.Multigraph), " "))
+        return nil
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package protocol
+
+import (
+        "fmt"
+        "io"
+        "log"
+        "net"
+        "os"
+
+        "github.com/wtnb75/gonin-node/config"
+)
+
+func ListenAndServe(addr string, conf config.Config) error <span class="cov0" title="0">{
+        name, err := os.Hostname()
+        if err != nil </span><span class="cov0" title="0">{
+                name = "gonin-node"
+        }</span>
+        <span class="cov0" title="0">srv := Server{Addr: addr, Config: conf, Name: name}
+        return srv.ListenAndServe()</span>
+}
+
+type Server struct {
+        Addr   string
+        Name   string
+        Config config.Config
+}
+
+type Conn struct {
+        RemoteAddr  net.Addr
+        Srv         *Server
+        Conn        net.Conn
+        Multigraph  bool
+        DirtyConfig bool
+}
+
+func (srv *Server) ListenAndServe() error <span class="cov0" title="0">{
+        ln, err := net.Listen("tcp", srv.Addr)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">for </span><span class="cov0" title="0">{
+                conn, err := ln.Accept()
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                <span class="cov0" title="0">log.Printf("connect from %s -&gt; %s", conn.RemoteAddr(), conn.LocalAddr())
+                connstruct := Conn{Conn: conn, RemoteAddr: conn.RemoteAddr(), Multigraph: false, DirtyConfig: false, Srv: srv}
+                go connstruct.Handle(conn, conn)</span>
+        }
+}
+
+func (conn *Conn) Handle(inp io.Reader, outp io.Writer) <span class="cov0" title="0">{
+        defer conn.Close()
+        fmt.Fprintln(conn.Conn, "# munin node at", conn.Srv.Name)
+        if err := conn.Repl(conn.Conn, conn.Conn); err != nil </span><span class="cov0" title="0">{
+                if err != io.EOF </span><span class="cov0" title="0">{
+                        log.Fatalln("repl error", err)
+                }</span>
+        }
+}
+
+func (conn *Conn) Close() <span class="cov0" title="0">{
+        log.Println("close connection", conn.RemoteAddr)
+        conn.Conn.Close()
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package protocol
+
+import (
+        "fmt"
+        "io"
+)
+
+func Nodes(conn *Conn, cmd string, arg []string, ofp io.Writer) error <span class="cov8" title="1">{
+        fmt.Fprintln(ofp, conn.Srv.Name)
+        fmt.Fprintln(ofp, ".")
+        return nil
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package protocol
+
+import "io"
+
+func Quit(conn *Conn, cmd string, arg []string, ofp io.Writer) error <span class="cov8" title="1">{
+        return io.EOF
+}</span>
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package protocol
+
+import (
+        "bufio"
+        "fmt"
+        "io"
+        "log"
+        "sort"
+        "strings"
+        "time"
+)
+
+type Cmd func(conn *Conn, cmd string, arg []string, ofp io.Writer) error
+
+var VersionString string = "0.1"
+
+var cmdmap = map[string]Cmd{
+        "fetch":   Fetch,
+        "cap":     Cap,
+        "config":  Config,
+        "list":    List,
+        "nodes":   Nodes,
+        "version": Version,
+        "quit":    Quit,
+        ".":       Quit,
+}
+
+func (conn *Conn) Repl(ifp io.Reader, ofp io.Writer) error <span class="cov8" title="1">{
+        inp := bufio.NewReader(ifp)
+        for </span><span class="cov8" title="1">{
+                if line, _, err := inp.ReadLine(); err != nil </span><span class="cov8" title="1">{
+                        log.Println("read error", err)
+                        return err
+                }</span> else<span class="cov8" title="1"> {
+                        l := strings.Fields(string(line))
+                        if len(l) == 0 </span><span class="cov0" title="0">{
+                                continue</span>
+                        }
+                        <span class="cov8" title="1">log.Println("got command", l)
+                        if fn, ok := cmdmap[l[0]]; ok </span><span class="cov8" title="1">{
+                                start := time.Now()
+                                if err := fn(conn, l[0], l[1:], ofp); err != nil </span><span class="cov8" title="1">{
+                                        if err != io.EOF </span><span class="cov0" title="0">{
+                                                log.Println("error", err, time.Since(start))
+                                        }</span>
+                                        <span class="cov8" title="1">return err</span>
+                                }
+                                <span class="cov8" title="1">log.Println("done", l[0], time.Since(start))</span>
+                        } else<span class="cov8" title="1"> {
+                                keys := make([]string, 0, len(cmdmap))
+                                for k := range cmdmap </span><span class="cov8" title="1">{
+                                        if k != "." </span><span class="cov8" title="1">{
+                                                keys = append(keys, k)
+                                        }</span>
+                                }
+                                <span class="cov8" title="1">sort.Strings(keys)
+                                fmt.Fprintln(ofp, "# Unknown command. Try", strings.Join(keys, ", "))</span>
+                        }
+                }
+        }
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package protocol
+
+import (
+        "fmt"
+        "io"
+)
+
+func Version(conn *Conn, cmd string, arg []string, ofp io.Writer) error <span class="cov8" title="1">{
+        fmt.Fprintln(ofp, "gonin node on", conn.Srv.Name, "version:", VersionString)
+        return nil
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
