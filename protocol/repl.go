@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"sort"
 	"strings"
 	"time"
 )
@@ -52,6 +53,7 @@ func (conn *Conn) Repl(ifp io.Reader, ofp io.Writer) error {
 						keys = append(keys, k)
 					}
 				}
+				sort.Strings(keys)
 				fmt.Fprintln(ofp, "# Unknown command. Try", strings.Join(keys, ", "))
 			}
 		}
