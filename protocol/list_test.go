@@ -45,7 +45,9 @@ echo "multigraph hello world"
 func TestList(t *testing.T) {
 	conf := config.Config{}
 	dir := make_plugin()
-	conf.ReadPlugins(dir)
+	if err := conf.ReadPlugins(dir); err != nil {
+		t.Error("readplugins", err)
+	}
 	conn := Conn{Srv: &Server{Name: "hello", Config: conf}}
 	ofp := bytes.Buffer{}
 	if err := List(&conn, "list", []string{}, &ofp); err != nil {
@@ -63,7 +65,9 @@ func TestList(t *testing.T) {
 func TestListMultigraph(t *testing.T) {
 	conf := config.Config{}
 	dir := make_plugin()
-	conf.ReadPlugins(dir)
+	if err := conf.ReadPlugins(dir); err != nil {
+		t.Error("readplugins", err)
+	}
 	conn := Conn{Srv: &Server{Name: "hello", Config: conf}}
 	ofp := bytes.Buffer{}
 	if err := Cap(&conn, "cap", []string{"multigraph"}, &ofp); err != nil {
